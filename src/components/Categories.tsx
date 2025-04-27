@@ -4,19 +4,19 @@ import { motion } from 'framer-motion';
 
 const featuredCategories = [
   {
-    title: "Veido priežiūra",
-    image: "https://images.pexels.com/photos/3762892/pexels-photo-3762892.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    description: "Prabangūs serumai ir kremai jūsų odos švytėjimui"
+    title: "Manikiūrui / Pedikiūrui",
+    image: "https://images.pexels.com/photos/3997391/pexels-photo-3997391.jpeg",
+    description: "Profesionalūs įrankiai ir priemonės nagų priežiūrai"
   },
   {
-    title: "Makiažas",
-    image: "https://images.pexels.com/photos/2688991/pexels-photo-2688991.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    description: "Profesionalūs makiažo produktai"
+    title: "Dulkių ištraukėjai",
+    image: "https://images.pexels.com/photos/7319307/pexels-photo-7319307.jpeg",
+    description: "Aukštos kokybės dulkių ištraukimo sistemos"
   },
   {
-    title: "Plaukų priežiūra",
-    image: "https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    description: "Šampūnai ir priemonės plaukų sveikatai"
+    title: "Rinkiniai pigiau",
+    image: "https://images.pexels.com/photos/4041392/pexels-photo-4041392.jpeg",
+    description: "Specialūs pasiūlymai ir rinkiniai"
   }
 ];
 
@@ -30,7 +30,7 @@ const Categories = () => {
           </h6>
           <h2 className="text-3xl md:text-4xl font-serif mb-6">Atraskite savo grožio ritualą</h2>
           <p className="text-text-secondary max-w-2xl mx-auto">
-            Tyrinėkite mūsų kruopščiai atrinktą prabangios kosmetikos kolekciją, sukurtą išryškinti jūsų natūralų grožį
+            Tyrinėkite mūsų kruopščiai atrinktą profesionalios kosmetikos kolekciją, sukurtą jūsų grožio salonui
           </p>
         </div>
 

@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCartStore } from '../../store/cartStore';
 import { supabase } from '../../lib/supabase';
+import { createMontonioOrder } from '../../lib/montonio';
+import ErrorToast from '../ErrorToast';
+import LoadingSpinner from '../LoadingSpinner';
 
 interface CheckoutFormData {
   fullName: string;
@@ -16,6 +20,8 @@ interface CheckoutFormData {
 const CheckoutForm = () => {
   const { items, clearCart, closeCart } = useCartStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<CheckoutFormData>({
     fullName: '',
     email: '',
@@ -37,47 +43,61 @@ const CheckoutForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
 
     try {
+      // Create order in Supabase first
+      const orderData = {
+        customer_name: formData.fullName,
+        customer_email: formData.email,
+        delivery_method: formData.deliveryMethod,
+        shipping_address: formData.deliveryMethod === 'shipping' ? {
+          address: formData.address,
+          city: formData.city,
+          postal_code: formData.postalCode,
+          phone: formData.phone
+        } : null,
+        total_price: total,
+        products: items.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity
+        })),
+        status: 'pending',
+        payment_reference: null
+      };
+
       const { data: order, error: orderError } = await supabase
         .from('orders')
-        .insert([
-          {
-            customer_name: formData.fullName,
-            customer_email: formData.email,
-            delivery_method: formData.deliveryMethod,
-            shipping_address: formData.deliveryMethod === 'shipping' ? {
-              address: formData.address,
-              city: formData.city,
-              postal_code: formData.postalCode,
-              phone: formData.phone
-            } : null,
-            total_price: total,
-            products: items.map(item => ({
-              id: item.id,
-              name: item.name,
-              price: item.price,
-              quantity: item.quantity
-            })),
-            status: 'pending',
-            payment_reference: null
-          }
-        ])
+        .insert([orderData])
         .select()
         .single();
 
       if (orderError) throw orderError;
 
-      // Clear the cart and close it
+      // Create Montonio order
+      const montonioPayload = {
+        merchantReference: order.id,
+        amount: total,
+        currency: 'EUR',
+        customerEmail: formData.email,
+        customerName: formData.fullName,
+        customerPhone: formData.phone,
+        returnUrl: `${window.location.origin}/order-success`,
+        notificationUrl: `${import.meta.env.VITE_API_URL}/webhook/montonio`,
+      };
+
+      const montonioOrder = await createMontonioOrder(montonioPayload);
+
+      // Clear cart and redirect to Montonio payment page
       clearCart();
       closeCart();
-
-      // Show success message
-      alert('Užsakymas sėkmingai pateiktas! Netrukus susisieksime.');
+      window.location.href = montonioOrder.paymentUrl;
 
     } catch (error) {
-      console.error('Error creating order:', error);
-      alert('Įvyko klaida pateikiant užsakymą. Prašome bandyti dar kartą.');
+      console.error('Error processing order:', error);
+      setError('Įvyko klaida apdorojant užsakymą. Prašome bandyti dar kartą.');
     } finally {
       setIsSubmitting(false);
     }
@@ -265,12 +285,25 @@ const CheckoutForm = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full btn-primary ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`w-full btn-primary relative ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            {isSubmitting ? 'Siunčiama...' : 'Patvirtinti užsakymą'}
+            {isSubmitting ? (
+              <div className="flex items-center justify-center">
+                <LoadingSpinner />
+                <span className="ml-2">Apdorojama...</span>
+              </div>
+            ) : (
+              'Tęsti apmokėjimą'
+            )}
           </button>
         </div>
       </form>
+
+      <ErrorToast
+        message={error || ''}
+        isVisible={!!error}
+        onClose={() => setError(null)}
+      />
     </div>
   );
 };
