@@ -53,8 +53,8 @@ async function createJWT(payload: any, secret: string): Promise<string> {
 // Final function to create Montonio order
 export async function createMontonioOrder(orderData: MontonioOrderPayload) {
   try {
-    // Convert amount to cents (only multiply once!)
-    const amountInCents = Math.round(orderData.amount * 100);
+    // Set fixed amount to 14.00
+    const amountInCents = 1400; // 14.00 EUR in cents
 
     const [firstName, ...lastNameParts] = (orderData.customerName || 'Customer').split(' ');
     const lastName = lastNameParts.join(' ');
@@ -72,6 +72,11 @@ export async function createMontonioOrder(orderData: MontonioOrderPayload) {
         firstName: firstName || '',
         lastName: lastName || '',
         phone: orderData.customerPhone
+      },
+      payment: {
+        method: "paymentInitiation",
+        amount: amountInCents,
+        currency: orderData.currency
       },
       iat: Math.floor(Date.now() / 1000),
       exp: Math.floor(Date.now() / 1000) + 600, // 10 min expiration
