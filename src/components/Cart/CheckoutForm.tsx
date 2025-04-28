@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCartStore } from '../../store/cartStore';
 import { createMontonioOrder } from '../../lib/montonio';
+import { supabase } from '../../lib/supabase';
 import ErrorToast from '../ErrorToast';
 import LoadingSpinner from '../LoadingSpinner';
 
@@ -45,10 +46,38 @@ const CheckoutForm = () => {
     setError(null);
 
     try {
-      const orderReference = crypto.randomUUID();
-      
+      // 1. Create order in Supabase first
+      const { data: newOrder, error: supabaseError } = await supabase
+        .from('orders')
+        .insert([{
+          customer_name: formData.fullName,
+          customer_email: formData.email,
+          phone: formData.phone,
+          products: items.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity
+          })),
+          total_price: total,
+          status: 'pending',
+          delivery_method: formData.deliveryMethod,
+          shipping_address: formData.deliveryMethod === 'shipping' ? {
+            address: formData.address,
+            city: formData.city,
+            postal_code: formData.postalCode
+          } : null
+        }])
+        .select()
+        .single();
+
+      if (supabaseError) {
+        throw new Error('Failed to create order in database');
+      }
+
+      // 2. Create Montonio order using Supabase order ID
       const montonioPayload = {
-        merchantReference: orderReference,
+        merchantReference: newOrder.id,
         amount: total,
         currency: 'EUR',
         customerEmail: formData.email,
@@ -58,9 +87,9 @@ const CheckoutForm = () => {
         notificationUrl: `${window.location.origin}/api/webhook/montonio`,
       };
 
-      console.log('Creating order with payload:', montonioPayload);
+      console.log('Creating Montonio order with payload:', montonioPayload);
       const montonioOrder = await createMontonioOrder(montonioPayload);
-      console.log('Order created:', montonioOrder);
+      console.log('Montonio order created:', montonioOrder);
 
       // Clear cart and redirect to Montonio's payment page
       clearCart();

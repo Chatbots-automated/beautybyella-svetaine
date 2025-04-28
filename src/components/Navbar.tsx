@@ -28,13 +28,17 @@ const Navbar = () => {
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-soft py-3' : 'bg-transparent py-5'
+        isScrolled ? 'bg-white shadow-soft py-2' : 'bg-transparent py-4'
       }`}
     >
       <div className="container-custom">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center">
-            <h1 className="text-2xl font-serif font-medium">Beauty by Ella</h1>
+            <img 
+              src="/beautybyellalogo.jpg" 
+              alt="Beauty by Ella Logo" 
+              className="h-12 w-auto rounded-full"
+            />
           </Link>
 
           <nav className="hidden md:flex items-center space-x-8">
