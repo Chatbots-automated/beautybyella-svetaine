@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCartStore } from '../../store/cartStore';
-import { supabase } from '../../lib/supabase';
 import { createMontonioOrder } from '../../lib/montonio';
 import ErrorToast from '../ErrorToast';
 import LoadingSpinner from '../LoadingSpinner';
@@ -46,58 +45,36 @@ const CheckoutForm = () => {
     setError(null);
 
     try {
-      // Create order in Supabase first
-      const orderData = {
-        customer_name: formData.fullName,
-        customer_email: formData.email,
-        delivery_method: formData.deliveryMethod,
-        shipping_address: formData.deliveryMethod === 'shipping' ? {
-          address: formData.address,
-          city: formData.city,
-          postal_code: formData.postalCode,
-          phone: formData.phone
-        } : null,
-        total_price: total,
-        products: items.map(item => ({
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity
-        })),
-        status: 'pending',
-        payment_reference: null
-      };
-
-      const { data: order, error: orderError } = await supabase
-        .from('orders')
-        .insert([orderData])
-        .select()
-        .single();
-
-      if (orderError) throw orderError;
-
-      // Create Montonio order
+      const orderReference = crypto.randomUUID();
+      
       const montonioPayload = {
-        merchantReference: order.id,
+        merchantReference: orderReference,
         amount: total,
         currency: 'EUR',
         customerEmail: formData.email,
         customerName: formData.fullName,
         customerPhone: formData.phone,
         returnUrl: `${window.location.origin}/order-success`,
-        notificationUrl: `${import.meta.env.VITE_API_URL}/webhook/montonio`,
+        notificationUrl: `${window.location.origin}/api/webhook/montonio`,
       };
 
+      console.log('Creating order with payload:', montonioPayload);
       const montonioOrder = await createMontonioOrder(montonioPayload);
+      console.log('Order created:', montonioOrder);
 
-      // Clear cart and redirect to Montonio payment page
+      // Clear cart and redirect to Montonio's payment page
       clearCart();
       closeCart();
-      window.location.href = montonioOrder.paymentUrl;
+      
+      if (montonioOrder.paymentUrl) {
+        window.location.href = montonioOrder.paymentUrl;
+      } else {
+        throw new Error('No payment URL received from Montonio');
+      }
 
     } catch (error) {
       console.error('Error processing order:', error);
-      setError('Įvyko klaida apdorojant užsakymą. Prašome bandyti dar kartą.');
+      setError(error instanceof Error ? error.message : 'Failed to process order. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
