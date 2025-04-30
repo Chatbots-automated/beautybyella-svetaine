@@ -2,24 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
-const featuredCategories = [
-  {
-    title: "Manikiūrui / Pedikiūrui",
-    image: "https://images.pexels.com/photos/3997391/pexels-photo-3997391.jpeg",
-    description: "Profesionalūs įrankiai ir priemonės nagų priežiūrai"
-  },
-  {
-    title: "Dulkių ištraukėjai",
-    image: "https://images.pexels.com/photos/7319307/pexels-photo-7319307.jpeg",
-    description: "Aukštos kokybės dulkių ištraukimo sistemos"
-  },
-  {
-    title: "Rinkiniai pigiau",
-    image: "https://images.pexels.com/photos/4041392/pexels-photo-4041392.jpeg",
-    description: "Specialūs pasiūlymai ir rinkiniai"
-  }
-];
-
 const Categories = () => {
   return (
     <section className="py-24 bg-background">
@@ -35,33 +17,80 @@ const Categories = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {featuredCategories.map((category, index) => (
-            <motion.div
-              key={category.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              viewport={{ once: true }}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            <Link 
+              to="/collections?category=Manikiūrui / Pedikiūrui"
+              className="group block"
             >
-              <Link 
-                to={`/collections?category=${encodeURIComponent(category.title)}`}
-                className="group block"
-              >
-                <div className="relative h-[400px] overflow-hidden rounded-2xl mb-6">
-                  <img
-                    src={category.image}
-                    alt={category.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent transition-opacity duration-300 group-hover:opacity-70" />
-                  <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                    <h3 className="text-2xl font-serif mb-2">{category.title}</h3>
-                    <p className="text-white/80 text-sm">{category.description}</p>
-                  </div>
+              <div className="relative h-[400px] overflow-hidden rounded-2xl mb-6">
+                <img
+                  src="https://images.pexels.com/photos/3997391/pexels-photo-3997391.jpeg"
+                  alt="Manikiūrui / Pedikiūrui"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent transition-opacity duration-300 group-hover:opacity-70" />
+                <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                  <h3 className="text-2xl font-serif mb-2">Manikiūrui / Pedikiūrui</h3>
+                  <p className="text-white/80 text-sm">Profesionalūs įrankiai ir priemonės nagų priežiūrai</p>
                 </div>
-              </Link>
-            </motion.div>
-          ))}
+              </div>
+            </Link>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            viewport={{ once: true }}
+          >
+            <Link 
+              to="/collections?category=Dulkių ištraukėjai"
+              className="group block"
+            >
+              <div className="relative h-[400px] overflow-hidden rounded-2xl mb-6">
+                <img
+                  src="https://images.pexels.com/photos/7319307/pexels-photo-7319307.jpeg"
+                  alt="Dulkių ištraukėjai"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent transition-opacity duration-300 group-hover:opacity-70" />
+                <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                  <h3 className="text-2xl font-serif mb-2">Dulkių ištraukėjai</h3>
+                  <p className="text-white/80 text-sm">Aukštos kokybės dulkių ištraukimo sistemos</p>
+                </div>
+              </div>
+            </Link>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            viewport={{ once: true }}
+          >
+            <Link 
+              to="/collections?category=Rinkiniai pigiau"
+              className="group block"
+            >
+              <div className="relative h-[400px] overflow-hidden rounded-2xl mb-6">
+                <img
+                  src="https://images.pexels.com/photos/4041392/pexels-photo-4041392.jpeg"
+                  alt="Rinkiniai pigiau"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent transition-opacity duration-300 group-hover:opacity-70" />
+                <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                  <h3 className="text-2xl font-serif mb-2">Rinkiniai pigiau</h3>
+                  <p className="text-white/80 text-sm">Specialūs pasiūlymai ir rinkiniai</p>
+                </div>
+              </div>
+            </Link>
+          </motion.div>
         </div>
 
         <div className="text-center mt-12">
