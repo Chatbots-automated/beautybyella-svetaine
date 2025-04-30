@@ -21,38 +21,23 @@ const About = () => {
           <div className="prose prose-lg max-w-none">
             <div className="mb-12">
               <p className="text-lg leading-relaxed text-text-secondary mb-6">
-                „Beauty by Ella" – tai grožio profesionalams skirta internetinė parduotuvė, siūlanti platų aukštos kokybės produktų asortimentą.
+                Beauty by Ella – tai daugiau nei tiesiog parduotuvė. Tai – mano asmeninis prekės ženklas, gimęs iš meilės grožio industrijai ir kasdienio darbo su nagų priežiūros profesionalais.
               </p>
               
               <p className="text-lg leading-relaxed text-text-secondary mb-6">
-                Mūsų tikslas – derinti mokslą ir grožį, kad pasiektume įspūdingų rezultatų. Kiekvienas mūsų siūlomas produktas kruopščiai atrinktas su meile, siekiant užtikrinti, kad jie atitiktų aukščiausius standartus ir padėtų pasiekti geriausius rezultatus.
-              </p>
-
-              <p className="text-lg leading-relaxed text-text-secondary mb-6">
-                Siūlome profesionalias kosmetologijos priemones, vienkartinius produktus bei baldus, kurie padeda sukurti funkcionalią ir estetišką darbo aplinką. Visi mūsų produktai gaminami atsižvelgiant į kokybės, praktiškumo ir stiliaus reikalavimus.
-              </p>
-
-              <p className="text-lg leading-relaxed text-text-secondary mb-6">
-                „Beauty by Ella" siekia būti patikimu partneriu grožio specialistams, teikdama ne tik kokybiškus produktus, bet ir profesionalų aptarnavimą. Mūsų komanda nuolat tobulina asortimentą, atsižvelgdama į naujausias grožio industrijos tendencijas ir klientų poreikius.
+                Sukūriau Beauty by Ella tam, kad meistrai turėtų vietą, kur rastų kruopščiai atrinktas, stilingas ir kokybiškas priemones, pritaikytas jų poreikiams. Kiekvienas produktas čia – tai apgalvotas pasirinkimas, kuris padeda kurti ne tik gražius rezultatus, bet ir malonią darbo patirtį.
               </p>
 
               <p className="text-lg leading-relaxed text-text-secondary">
-                Kviečiame susipažinti su mūsų produktais ir atrasti sprendimus, kurie padės jūsų verslui augti bei klestėti!
+                Šis prekės ženklas – tai apie tikrumą, estetiką ir ryšį su tais, kurie dirba iš širdies. Jei ir tu vertini kokybę, aiškų stilių ir nuoširdų požiūrį – Beauty by Ella skirta būtent tau.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16">
-              <div className="relative h-[400px] rounded-lg overflow-hidden">
+            <div className="grid grid-cols-1 gap-8 mt-16">
+              <div className="relative h-[600px] rounded-lg overflow-hidden">
                 <img
-                  src="https://images.pexels.com/photos/3785147/pexels-photo-3785147.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                  alt="Beauty products display"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="relative h-[400px] rounded-lg overflow-hidden">
-                <img
-                  src="https://images.pexels.com/photos/3785170/pexels-photo-3785170.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                  alt="Spa treatment room"
+                  src="https://i.imgur.com/kEsqUGD.png"
+                  alt="Beauty by Ella workspace"
                   className="w-full h-full object-cover"
                 />
               </div>

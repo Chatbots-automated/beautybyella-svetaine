@@ -21,14 +21,8 @@ const Hero = () => {
             </div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif tracking-tight mb-8 leading-[1.1]">
-              Atraskite savo
-              <span className="block text-accent mt-2">natūralų grožį</span>
+              Beauty by Ella - profesionalams,kuriantiems grožį rankomis. Kruopščiai atrinkti nagų priežiūros produktai,skirti meistrams,kurie vertina kokybę,estetiką ir patikimumą.
             </h1>
-
-            <p className="text-lg text-text-secondary mb-8 leading-relaxed">
-              Aukščiausios kokybės produktai, sukurti iš natūralių ingredientų, 
-              skirti profesionaliai odos priežiūrai ir švytėjimui
-            </p>
 
             <div className="flex flex-wrap gap-4 mb-12">
               <Link to="/collections" className="btn-primary group">
@@ -59,7 +53,7 @@ const Hero = () => {
           >
             <div className="relative rounded-3xl overflow-hidden shadow-2xl">
               <img
-                src="https://i.imgur.com/hAhaGl0.png"
+                src="https://i.imgur.com/tf8pHsZ.png"
                 alt="Beauty by Ella product"
                 className="w-full h-full object-cover"
               />

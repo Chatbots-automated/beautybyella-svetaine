@@ -57,7 +57,7 @@ const Footer = () => {
             <address className="not-italic text-text-secondary">
               <p className="mb-2">Giraitės g. 60A, Rubežius</p>
               <p className="mb-2">info@beautybyella.lt</p>
-              <p>+370 600 00000</p>
+              <p><a href="tel:+37064027403" className="hover:text-accent transition-colors">+370 640 27403</a></p>
             </address>
           </div>
         </div>

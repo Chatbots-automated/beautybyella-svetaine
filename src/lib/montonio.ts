@@ -66,7 +66,7 @@ export async function createMontonioOrder(orderData: MontonioOrderPayload) {
       currency: orderData.currency,
       locale: 'lt',
       returnUrl: orderData.returnUrl,
-      notificationUrl: orderData.notificationUrl,
+      notificationUrl: 'https://hook.eu2.make.com/gg74w4qv8l8xhuhavwnmpk2wjxp4khj4',
       customer: {
         email: orderData.customerEmail,
         firstName: firstName || '',

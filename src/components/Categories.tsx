@@ -29,7 +29,7 @@ const Categories = () => {
             >
               <div className="relative h-[400px] overflow-hidden rounded-2xl mb-6">
                 <img
-                  src="https://images.pexels.com/photos/3997391/pexels-photo-3997391.jpeg"
+                  src="https://i.imgur.com/SXpwuIc.png"
                   alt="Manikiūrui / Pedikiūrui"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
@@ -54,7 +54,7 @@ const Categories = () => {
             >
               <div className="relative h-[400px] overflow-hidden rounded-2xl mb-6">
                 <img
-                  src="https://images.pexels.com/photos/7319307/pexels-photo-7319307.jpeg"
+                  src="https://i.imgur.com/5VbQBS4.png"
                   alt="Dulkių ištraukėjai"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
@@ -79,7 +79,7 @@ const Categories = () => {
             >
               <div className="relative h-[400px] overflow-hidden rounded-2xl mb-6">
                 <img
-                  src="https://images.pexels.com/photos/4041392/pexels-photo-4041392.jpeg"
+                  src="https://i.imgur.com/s0PQmT6.png"
                   alt="Rinkiniai pigiau"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
