@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag, Facebook, Instagram } from 'lucide-react';
 import { useCartStore } from '../store/cartStore';
 
 const Navbar = () => {
@@ -49,6 +49,22 @@ const Navbar = () => {
           </nav>
 
           <div className="flex items-center gap-4">
+            <a 
+              href="https://www.facebook.com/profile.php?id=100083485518751"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-accent transition-colors"
+            >
+              <Facebook className="w-5 h-5" />
+            </a>
+            <a 
+              href="https://www.instagram.com/beautybyella.lt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-accent transition-colors"
+            >
+              <Instagram className="w-5 h-5" />
+            </a>
             <button
               onClick={toggleCart}
               className="relative p-2 hover:text-accent transition-colors"

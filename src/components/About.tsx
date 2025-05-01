@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const About = () => {
   return (
@@ -27,9 +28,9 @@ const About = () => {
             <p className="text-text-secondary mb-8 leading-relaxed">
               Naudojame tik natūralius ingredientus, kurie puoselėja odą ir suteikia jai švytėjimo. Kiekvienas produktas sukurtas su meile ir dėmesiu detalėms, užtikrinant, kad jūsų odos priežiūros ritualas būtų ne tik veiksmingas, bet ir malonus.
             </p>
-            <button className="btn-primary">
+            <Link to="/about" className="btn-primary">
               Sužinoti daugiau
-            </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -37,4 +38,4 @@ const About = () => {
   );
 };
 
-export default About
+export default About;

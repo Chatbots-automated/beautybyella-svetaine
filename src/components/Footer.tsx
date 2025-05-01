@@ -1,4 +1,5 @@
 import React from 'react';
+import { Facebook, Instagram } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -19,16 +20,20 @@ const Footer = () => {
             </p>
             <div className="flex items-center space-x-4">
               <a 
-                href="https://instagram.com" 
+                href="https://www.facebook.com/profile.php?id=100083485518751" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="text-text-primary hover:text-accent transition-colors"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
-                </svg>
+                <Facebook className="w-5 h-5" />
+              </a>
+              <a 
+                href="https://www.instagram.com/estetine_kosmetologija_evelina/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-text-primary hover:text-accent transition-colors"
+              >
+                <Instagram className="w-5 h-5" />
               </a>
             </div>
           </div>
@@ -65,6 +70,9 @@ const Footer = () => {
         <div className="border-t border-gray-200 pt-8 text-center">
           <p className="text-sm text-text-secondary">
             &copy; {new Date().getFullYear()} Beauty by Ella. Visos teisės saugomos.
+          </p>
+          <p className="text-sm text-text-secondary mt-2">
+            Svetainę kūrė <a href="https://pagalvosiu.lt" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">Pagalvosiu.lt</a>
           </p>
         </div>
       </div>
