@@ -5,7 +5,13 @@ import { Sparkles } from 'lucide-react';
 
 const Hero = () => {
   return (
-    <section className="relative min-h-[100dvh] bg-background">
+    <section className="relative min-h-[100dvh] bg-background overflow-hidden">
+      {/* Decorative elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 -right-20 w-96 h-96 bg-accent/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 -left-20 w-[500px] h-[500px] bg-accent/10 rounded-full blur-3xl"></div>
+      </div>
+
       <div className="container-custom relative z-10 min-h-[100dvh] flex">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12 py-32">
           {/* Text Content */}
@@ -15,33 +21,62 @@ const Hero = () => {
             transition={{ duration: 0.8 }}
             className="flex-1 max-w-2xl"
           >
-            <div className="inline-flex items-center bg-white px-4 py-2 rounded-full shadow-soft mb-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="inline-flex items-center bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-soft mb-8"
+            >
               <Sparkles className="w-4 h-4 text-accent mr-2" />
               <span className="text-sm font-medium">Profesionali kosmetika</span>
-            </div>
+            </motion.div>
 
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif tracking-tight mb-8 leading-[1.1]">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="text-5xl sm:text-6xl lg:text-7xl font-serif tracking-tight mb-4 leading-[1.1]"
+            >
+              Atraskite savo naturalų grožį
+            </motion.h1>
+            
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.6 }}
+              className="text-xl text-text-secondary mb-8 leading-relaxed"
+            >
               Beauty by Ella - profesionalams,kuriantiems grožį rankomis. Kruopščiai atrinkti nagų priežiūros produktai,skirti meistrams,kurie vertina kokybę,estetiką ir patikimumą.
-            </h1>
+            </motion.p>
 
-            <div className="flex flex-wrap gap-4 mb-12">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.6 }}
+              className="flex flex-wrap gap-4 mb-12"
+            >
               <Link to="/collections" className="btn-primary group">
                 Peržiūrėti kolekciją
                 <span className="ml-2 transition-transform duration-300 inline-block group-hover:translate-x-1">→</span>
               </Link>
               <Link to="/about" className="btn-secondary">Sužinoti daugiau</Link>
-            </div>
+            </motion.div>
 
-            <div className="grid grid-cols-2 gap-6">
-              <div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1, duration: 0.6 }}
+              className="grid grid-cols-2 gap-6"
+            >
+              <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl">
                 <h4 className="text-3xl font-serif mb-1">150+</h4>
                 <p className="text-text-secondary">Produktų</p>
               </div>
-              <div>
+              <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl">
                 <h4 className="text-3xl font-serif mb-1">98%</h4>
                 <p className="text-text-secondary">Natūralūs ingredientai</p>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
 
           {/* Image */}
@@ -57,7 +92,26 @@ const Hero = () => {
                 alt="Beauty by Ella product"
                 className="w-full h-full object-cover"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             </div>
+            
+            {/* Floating elements */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+              className="absolute -bottom-8 -left-8 bg-white rounded-2xl p-6 shadow-xl"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center">
+                  <Sparkles className="w-6 h-6 text-accent" />
+                </div>
+                <div>
+                  <p className="font-medium">Aukščiausia kokybė</p>
+                  <p className="text-sm text-text-secondary">Profesionalams</p>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </div>

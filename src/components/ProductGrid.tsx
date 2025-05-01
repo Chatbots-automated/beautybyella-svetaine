@@ -4,6 +4,7 @@ import { Dialog } from '@headlessui/react';
 import { Search, X, Filter, ShoppingBag, SlidersHorizontal } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useCartStore } from '../store/cartStore';
+import { useSearchParams } from 'react-router-dom';
 
 interface Product {
   id: string;
@@ -148,13 +149,16 @@ const ProductCard: React.FC<{
 };
 
 const ProductGrid: React.FC<ProductGridProps> = ({ initialCategory }) => {
+  const [searchParams] = useSearchParams();
+  const categoryFromUrl = searchParams.get('category');
+  
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory || '');
+  const [selectedCategory, setSelectedCategory] = useState<string>(categoryFromUrl || initialCategory || '');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | ''>('');
   const [currentPage, setCurrentPage] = useState(1);
   const [quickViewProduct, setQuickViewProduct] = useState<Product & { isOpen: boolean } | null>(null);
@@ -163,10 +167,12 @@ const ProductGrid: React.FC<ProductGridProps> = ({ initialCategory }) => {
   const { addItem, items } = useCartStore();
 
   useEffect(() => {
-    if (initialCategory !== undefined) {
+    if (categoryFromUrl) {
+      setSelectedCategory(categoryFromUrl);
+    } else if (initialCategory !== undefined) {
       setSelectedCategory(initialCategory || '');
     }
-  }, [initialCategory]);
+  }, [initialCategory, categoryFromUrl]);
 
   useEffect(() => {
     fetchProducts();

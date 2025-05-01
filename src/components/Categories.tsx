@@ -24,7 +24,7 @@ const Categories = () => {
             viewport={{ once: true }}
           >
             <Link 
-              to="/collections?category=Manikiūrui / Pedikiūrui"
+              to="/collections"
               className="group block"
             >
               <div className="relative h-[400px] overflow-hidden rounded-2xl mb-6">
@@ -49,7 +49,7 @@ const Categories = () => {
             viewport={{ once: true }}
           >
             <Link 
-              to="/collections?category=Dulkių ištraukėjai"
+              to="/collections?category=Teri dulkių surinkėjai ir priedai"
               className="group block"
             >
               <div className="relative h-[400px] overflow-hidden rounded-2xl mb-6">
@@ -74,7 +74,7 @@ const Categories = () => {
             viewport={{ once: true }}
           >
             <Link 
-              to="/collections?category=Rinkiniai pigiau"
+              to="/collections?category=Rinkiniai PIGIAU!"
               className="group block"
             >
               <div className="relative h-[400px] overflow-hidden rounded-2xl mb-6">

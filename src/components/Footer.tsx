@@ -15,7 +15,7 @@ const Footer = () => {
               <h2 className="text-2xl font-serif">Beauty by Ella</h2>
             </div>
             <p className="text-text-secondary mb-6 max-w-xs">
-              Natūrali kosmetika jūsų grožiui ir švytinčiai odai. Aukščiausia kokybė ir rūpestis jumis.
+              Beauty by Ella - tai vieta,kur kokybė susitinka su estetika.
             </p>
             <div className="flex items-center space-x-4">
               <a 
