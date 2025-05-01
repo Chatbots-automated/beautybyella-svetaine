@@ -68,14 +68,20 @@ const Hero = () => {
               transition={{ delay: 1, duration: 0.6 }}
               className="grid grid-cols-2 gap-6"
             >
-              <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl">
-                <h4 className="text-3xl font-serif mb-1">150+</h4>
-                <p className="text-text-secondary">Produktų</p>
-              </div>
-              <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl">
-                <h4 className="text-3xl font-serif mb-1">98%</h4>
-                <p className="text-text-secondary">Natūralūs ingredientai</p>
-              </div>
+              <Link 
+                to="/collections?category=Tiksotropiniai geliai ir dažai"
+                className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl hover:bg-accent/10 transition-colors"
+              >
+                <h4 className="text-xl font-serif mb-1">Tiksotropiniai geliai ir dažai</h4>
+                <p className="text-text-secondary">Profesionalūs produktai</p>
+              </Link>
+              <Link 
+                to="/collections?category=Teri dulkių surinkėjai ir priedai"
+                className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl hover:bg-accent/10 transition-colors"
+              >
+                <h4 className="text-xl font-serif mb-1">Teri dulkių surinkėjai</h4>
+                <p className="text-text-secondary">Aukštos kokybės įranga</p>
+              </Link>
             </motion.div>
           </motion.div>
 
