@@ -26,7 +26,7 @@ const Collections = () => {
             </div>
             <h1 className="text-4xl md:text-5xl font-serif mb-6">Mūsų Kolekcija</h1>
             <p className="text-text-secondary max-w-2xl mx-auto mb-8">
-              Tyrinėkite mūsų kruopščiai atrinktą prabangios kosmetikos kolekciją, sukurtą išryškinti jūsų natūralų grožį ir patobulinti odos priežiūros rutiną.
+              Kokybė, kuria pasitiki grožio meistrai. Visa, ko reikia Jūsų manikiūro ir pedikiūro darbui - kokybė, kuria galite pasitikėti kasdien.
             </p>
           </motion.div>
         </div>

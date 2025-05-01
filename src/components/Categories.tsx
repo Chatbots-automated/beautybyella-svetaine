@@ -12,7 +12,7 @@ const Categories = () => {
           </h6>
           <h2 className="text-3xl md:text-4xl font-serif mb-6">Atraskite savo grožio ritualą</h2>
           <p className="text-text-secondary max-w-2xl mx-auto">
-            Tyrinėkite mūsų kruopščiai atrinktą profesionalios kosmetikos kolekciją, sukurtą jūsų grožio salonui
+            Kokybė, kuria pasitiki grožio meistrai. Visa, ko reikia Jūsų manikiūro ir pedikiūro darbui - kokybė, kuria galite pasitikėti kasdien.
           </p>
         </div>
 
