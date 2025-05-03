@@ -5,6 +5,7 @@ import { createMontonioOrder } from '../../lib/montonio';
 import { supabase } from '../../lib/supabase';
 import ErrorToast from '../ErrorToast';
 import LoadingSpinner from '../LoadingSpinner';
+import { X } from 'lucide-react';
 
 interface CheckoutFormData {
   fullName: string;
@@ -33,11 +34,55 @@ const CheckoutForm = () => {
     pickupLocation: 'trakai',
   });
 
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  // Coupon state
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    discount_value: number;
+  } | null>(null);
+  const [isCouponLoading, setIsCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState<string | null>(null);
+
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const discount = appliedCoupon ? appliedCoupon.discount_value : 0;
+  const total = Math.max(0, subtotal - discount);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+
+    setIsCouponLoading(true);
+    setCouponError(null);
+
+    try {
+      const { data, error } = await supabase
+        .from('coupons')
+        .select('code, discount_value')
+        .eq('code', couponCode.trim())
+        .eq('is_active', true)
+        .single();
+
+      if (error) throw new Error('Neteisingas nuolaidos kodas');
+      if (!data) throw new Error('Nuolaidos kodas nerastas');
+
+      setAppliedCoupon(data);
+      setCouponCode('');
+    } catch (error) {
+      setCouponError(error instanceof Error ? error.message : 'Klaida tikrinant nuolaidos kodą');
+      setAppliedCoupon(null);
+    } finally {
+      setIsCouponLoading(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode('');
+    setCouponError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,7 +91,7 @@ const CheckoutForm = () => {
     setError(null);
 
     try {
-      // 1. Create order in Supabase first
+      // Create order in Supabase first
       const { data: newOrder, error: supabaseError } = await supabase
         .from('orders')
         .insert([{
@@ -60,6 +105,9 @@ const CheckoutForm = () => {
             quantity: item.quantity
           })),
           total_price: total,
+          subtotal: subtotal,
+          discount: discount,
+          applied_coupon: appliedCoupon?.code,
           status: 'pending',
           delivery_method: formData.deliveryMethod,
           shipping_address: formData.deliveryMethod === 'shipping' ? {
@@ -75,7 +123,7 @@ const CheckoutForm = () => {
         throw new Error('Failed to create order in database');
       }
 
-      // 2. Create Montonio order using Supabase order ID
+      // Create Montonio order using Supabase order ID
       const montonioPayload = {
         merchantReference: newOrder.id,
         amount: total,
@@ -280,12 +328,76 @@ const CheckoutForm = () => {
               </select>
             </div>
           )}
+
+          {/* Coupon Section */}
+          <div className="border-t border-gray-200 pt-6">
+            <h3 className="text-lg font-serif mb-4">Nuolaidos kodas</h3>
+            
+            {appliedCoupon ? (
+              <div className="flex items-center justify-between bg-accent/10 rounded-lg p-4">
+                <div>
+                  <p className="font-medium">Pritaikytas kodas: {appliedCoupon.code}</p>
+                  <p className="text-sm text-text-secondary">
+                    Nuolaida: €{appliedCoupon.discount_value.toFixed(2)}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={removeCoupon}
+                  className="p-2 hover:bg-accent/20 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-3">
+                <input
+                  type="text"
+                  placeholder="Įveskite nuolaidos kodą"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  className="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-accent"
+                />
+                <button
+                  type="button"
+                  onClick={handleApplyCoupon}
+                  disabled={isCouponLoading || !couponCode.trim()}
+                  className="btn-secondary whitespace-nowrap"
+                >
+                  {isCouponLoading ? (
+                    <div className="flex items-center">
+                      <LoadingSpinner />
+                      <span className="ml-2">Tikrinama...</span>
+                    </div>
+                  ) : (
+                    'Pritaikyti'
+                  )}
+                </button>
+              </div>
+            )}
+            
+            {couponError && (
+              <p className="mt-2 text-sm text-red-600">{couponError}</p>
+            )}
+          </div>
         </div>
 
         <div className="border-t border-gray-200 pt-6">
-          <div className="flex justify-between mb-4">
-            <span className="font-serif text-lg">Bendra suma:</span>
-            <span className="font-serif text-xl">€{total.toFixed(2)}</span>
+          <div className="space-y-2 mb-4">
+            <div className="flex justify-between text-text-secondary">
+              <span>Tarpinė suma:</span>
+              <span>€{subtotal.toFixed(2)}</span>
+            </div>
+            {appliedCoupon && (
+              <div className="flex justify-between text-accent">
+                <span>Nuolaida:</span>
+                <span>-€{appliedCoupon.discount_value.toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex justify-between text-xl font-serif">
+              <span>Bendra suma:</span>
+              <span>€{total.toFixed(2)}</span>
+            </div>
           </div>
 
           <button

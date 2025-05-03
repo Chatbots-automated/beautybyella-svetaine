@@ -19,7 +19,7 @@ const ProductCategories = () => {
   const [error, setError] = useState<string | null>(null);
 
   const categories = [
-    'Tiksotropiniai geliai ir dažai',
+    'Gelio sistema ir geliniai dažai',
     'Teri dulkių surinkėjai ir priedai'
   ];
 
