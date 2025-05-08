@@ -30,52 +30,45 @@ const DiscountNotification = () => {
   return (
     <AnimatePresence>
       {isVisible && (
-        <>
+        <div className="fixed inset-x-0 bottom-0 z-50 px-4 pb-4">
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
-            onClick={handleClose}
-          />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-xl mx-4"
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 100 }}
+            className="bg-white rounded-t-xl md:rounded-xl shadow-luxe max-w-sm mx-auto overflow-hidden"
           >
-            <div className="bg-white rounded-2xl shadow-xl p-8">
+            <div className="p-4">
               <button
                 onClick={handleClose}
-                className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
+                className="absolute top-3 right-3 p-1.5 hover:bg-gray-100 rounded-full transition-colors"
               >
-                <X className="w-6 h-6 text-gray-400" />
+                <X className="w-4 h-4 text-gray-400" />
               </button>
               
-              <div className="flex flex-col items-center text-center gap-6">
-                <div className="bg-accent/10 p-4 rounded-full">
-                  <Tag className="w-10 h-10 text-accent" />
+              <div className="flex flex-col items-center text-center gap-3">
+                <div className="bg-accent/10 p-2 rounded-full">
+                  <Tag className="w-5 h-5 text-accent" />
                 </div>
                 
                 <div>
-                  <p className="text-xl font-serif mb-4">
-                    Įveskite šį nuolaidos kodą darant apmokėjimą ir gaukite 5eur nuolaidą nuo galutinės sumos!
+                  <p className="text-sm font-medium mb-2">
+                    Gaukite 5€ nuolaidą nuo galutinės sumos!
                   </p>
-                  <div className="bg-background p-6 rounded-xl">
-                    <span className="font-mono text-2xl font-medium">viešas123</span>
+                  <div className="bg-background p-2 rounded-lg">
+                    <span className="font-mono text-base font-medium">viešas123</span>
                   </div>
                 </div>
 
                 <button
                   onClick={handleClose}
-                  className="btn-primary mt-2"
+                  className="w-full btn-primary text-sm py-2"
                 >
                   Supratau
                 </button>
               </div>
             </div>
           </motion.div>
-        </>
+        </div>
       )}
     </AnimatePresence>
   );
