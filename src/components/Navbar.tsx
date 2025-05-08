@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Facebook, Instagram } from 'lucide-react';
 import { useCartStore } from '../store/cartStore';
+import TrackingButton from './TrackingButton';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -65,6 +66,7 @@ const Navbar = () => {
             >
               <Instagram className="w-5 h-5" />
             </a>
+            <TrackingButton />
             <button
               onClick={toggleCart}
               className="relative p-2 hover:text-accent transition-colors"

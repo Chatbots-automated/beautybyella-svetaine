@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCartStore } from '../../store/cartStore';
 import { createMontonioOrder } from '../../lib/montonio';
+import { createShipment } from '../../lib/shipping';
 import { supabase } from '../../lib/supabase';
 import ErrorToast from '../ErrorToast';
 import LoadingSpinner from '../LoadingSpinner';
@@ -91,7 +92,27 @@ const CheckoutForm = () => {
     setError(null);
 
     try {
-      // Create order in Supabase first
+      // Calculate total weight based on items (assuming each item is 500g)
+      const totalWeight = items.reduce((sum, item) => sum + (item.quantity * 500), 0);
+
+      // Create shipping if delivery method is 'shipping'
+      let shippingInfo = null;
+      if (formData.deliveryMethod === 'shipping') {
+        shippingInfo = await createShipment({
+          orderId: `ORDER${Date.now()}`,
+          receiverName: formData.fullName,
+          receiverPhone: formData.phone,
+          receiverEmail: formData.email,
+          street: formData.address,
+          building: "1", // Default value
+          postalCode: formData.postalCode,
+          locality: formData.city,
+          municipality: `${formData.city} m. sav.`,
+          weight: totalWeight
+        });
+      }
+
+      // Create order in Supabase
       const { data: newOrder, error: supabaseError } = await supabase
         .from('orders')
         .insert([{
@@ -114,7 +135,8 @@ const CheckoutForm = () => {
             address: formData.address,
             city: formData.city,
             postal_code: formData.postalCode
-          } : null
+          } : null,
+          tracking_number: shippingInfo?.trackingNumber
         }])
         .select()
         .single();
@@ -123,7 +145,7 @@ const CheckoutForm = () => {
         throw new Error('Failed to create order in database');
       }
 
-      // Create Montonio order using Supabase order ID
+      // Create Montonio order
       const montonioPayload = {
         merchantReference: newOrder.id,
         amount: total,
@@ -135,11 +157,9 @@ const CheckoutForm = () => {
         notificationUrl: `${window.location.origin}/api/webhook/montonio`,
       };
 
-      console.log('Creating Montonio order with payload:', montonioPayload);
       const montonioOrder = await createMontonioOrder(montonioPayload);
-      console.log('Montonio order created:', montonioOrder);
 
-      // Clear cart and redirect to Montonio's payment page
+      // Clear cart and redirect
       clearCart();
       closeCart();
       
