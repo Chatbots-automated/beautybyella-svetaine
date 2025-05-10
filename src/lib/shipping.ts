@@ -1,6 +1,5 @@
 import { lpExpressClient } from './lpexpress';
 
-// Default sender address for Beauty by Ella
 const DEFAULT_SENDER = {
   name: "Beauty by Ella",
   contacts: {
@@ -22,48 +21,50 @@ interface ShippingDetails {
   receiverName: string;
   receiverPhone: string;
   receiverEmail: string;
-  street: string;
-  building: string;
-  postalCode: string;
-  locality: string;
-  municipality: string;
+  terminalId: string;
   weight: number;
+  terminal?: {
+    city: string;
+    address: string;
+    postalCode: string;
+  };
 }
 
 export async function createShipment(details: ShippingDetails) {
   try {
-    // Step 1: Create or get sender address
+    // Step 1: Create sender address
     const senderResponse = await lpExpressClient.createSenderAddress(DEFAULT_SENDER);
     const senderAddressId = senderResponse.id;
 
-    // Step 2: Create parcel
+    // Step 2: Create parcel with terminal data
     const parcelData = {
-      idRef: details.orderId,
-      plan: { code: "T2H" }, // Terminal to Home delivery
-      parcel: {
-        type: "PACKAGE",
-        size: "M", // Default size, adjust based on actual needs
-        weight: details.weight,
-        partCount: 1,
-        document: false
-      },
-      receiver: {
-        name: details.receiverName,
-        contacts: {
-          phone: details.receiverPhone,
-          email: details.receiverEmail
-        },
-        address: {
-          street: details.street,
-          building: details.building,
-          postalCode: details.postalCode,
-          locality: details.locality,
-          municipality: details.municipality,
-          countryCode: "LT"
-        }
-      },
-      senderAddressId
-    };
+  idRef: details.orderId,
+  plan: {
+    code: 'TERMINAL',
+    size: 'M',
+    weight: details.weight
+  },
+  parcel: {
+    type: 'Parcel',
+    size: 'M',
+    weight: details.weight,
+    partCount: 1,
+    document: false
+  },
+  receiver: {
+    name: details.receiverName,
+    phone: details.receiverPhone,
+    email: details.receiverEmail,
+    terminalId: details.terminalId,
+    address: {
+      countryCode: 'LT',
+      postalCode: details.terminal?.postalCode || '01100',
+      street: details.terminal?.address || 'Terminal',
+      locality: details.terminal?.city || 'Vilnius'
+    }
+  },
+  senderAddressId
+};
 
     const parcelResponse = await lpExpressClient.createParcel(parcelData);
 
@@ -72,8 +73,6 @@ export async function createShipment(details: ShippingDetails) {
 
     // Step 4: Get shipping label
     const labelBlob = await lpExpressClient.getShippingLabel(details.orderId);
-
-    // Create URL for the PDF
     const labelUrl = URL.createObjectURL(labelBlob);
 
     return {

@@ -36,7 +36,25 @@ export async function createParcel(params: CreateParcelParams) {
     },
     body: JSON.stringify({
       action: 'createParcel',
-      ...params,
+      idRef: params.orderId,
+      plan: {
+        planCode: 'TERMINAL',
+        size: 'M',
+        weight: params.weight
+      },
+      parcel: {
+        type: 'PACKAGE',
+        size: 'M',
+        weight: params.weight,
+        partCount: 1,
+        document: false
+      },
+      receiver: {
+        name: params.receiverName,
+        phone: params.receiverPhone,
+        email: params.receiverEmail,
+        terminalId: params.terminalId
+      }
     }),
   });
 
