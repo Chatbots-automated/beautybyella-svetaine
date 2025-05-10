@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useCartStore } from '../../store/cartStore';
 import { createMontonioOrder } from '../../lib/montonio';
 import { getTerminals } from '../../lib/lpexpress';
-import { createShipment } from '../../lib/shipping';
 import { supabase } from '../../lib/supabase';
 import ErrorToast from '../ErrorToast';
 import LoadingSpinner from '../LoadingSpinner';
@@ -117,28 +116,18 @@ const CheckoutForm = () => {
     setError(null);
 
     try {
-      // Calculate total weight (assuming each item is 500g)
-      const totalWeight = items.reduce((sum, item) => sum + (item.quantity * 500), 0);
-
-      // Create shipping if delivery method is 'shipping'
-      let shippingInfo = null;
+      // Get selected terminal details if shipping method is selected
+      let terminalAddress = null;
       if (formData.deliveryMethod === 'shipping') {
-        const selectedTerminal = terminals.find(t => t.terminalId === formData.terminalId);
-        
-        const shippingResult = await createShipment({
-          orderId: `ORDER${Date.now()}`,
-          receiverName: formData.fullName,
-          receiverPhone: formData.phone,
-          receiverEmail: formData.email,
-          terminalId: formData.terminalId,
-          weight: totalWeight,
-          terminal: selectedTerminal
-        });
-
-        shippingInfo = { 
-          trackingNumber: shippingResult.trackingNumber,
-          labelUrl: shippingResult.labelUrl
-        };
+        const selectedTerminal = terminals.find(t => t.id === formData.terminalId);
+        if (selectedTerminal) {
+          terminalAddress = {
+            name: selectedTerminal.name,
+            city: selectedTerminal.city,
+            address: selectedTerminal.address,
+            postal_code: selectedTerminal.postalCode
+          };
+        }
       }
 
       // Create order in Supabase
@@ -161,7 +150,7 @@ const CheckoutForm = () => {
           status: 'pending',
           delivery_method: formData.deliveryMethod,
           terminal_id: formData.deliveryMethod === 'shipping' ? formData.terminalId : null,
-          tracking_number: shippingInfo?.trackingNumber
+          terminal_address: terminalAddress
         }])
         .select()
         .single();

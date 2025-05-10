@@ -8,7 +8,7 @@ interface Terminal {
   postalCode: string;
 }
 
-export async function getTerminals(): Promise<Terminal[]> {
+async function getTerminals(): Promise<Terminal[]> {
   const response = await fetch('https://beautybella-lpexpress.vercel.app/api/lpexpress');
 
   if (!response.ok) {
@@ -48,7 +48,7 @@ interface CreateParcelParams {
   senderAddressId: string;
 }
 
-export async function createParcel(params: CreateParcelParams) {
+async function createParcel(params: CreateParcelParams) {
   const response = await fetch('https://beautybella-lpexpress.vercel.app/api/lpexpress', {
     method: 'POST',
     headers: {
@@ -68,7 +68,7 @@ export async function createParcel(params: CreateParcelParams) {
   return response.json();
 }
 
-export async function initiateShipping(orderId: string) {
+async function initiateShipping(orderId: string) {
   const response = await fetch('https://beautybella-lpexpress.vercel.app/api/lpexpress', {
     method: 'POST',
     headers: {
@@ -87,7 +87,7 @@ export async function initiateShipping(orderId: string) {
   return response.json();
 }
 
-export async function getShippingLabel(orderId: string) {
+async function getShippingLabel(orderId: string) {
   const response = await fetch('https://beautybella-lpexpress.vercel.app/api/lpexpress', {
     method: 'POST',
     headers: {
@@ -105,3 +105,48 @@ export async function getShippingLabel(orderId: string) {
 
   return response.blob();
 }
+
+interface SenderAddress {
+  name: string;
+  contacts: {
+    phone: string;
+    email: string;
+  };
+  address: {
+    street: string;
+    building: string;
+    postalCode: string;
+    locality: string;
+    municipality: string;
+    countryCode: string;
+  };
+}
+
+async function createSenderAddress(senderAddress: SenderAddress) {
+  const response = await fetch('https://beautybella-lpexpress.vercel.app/api/lpexpress', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'createSenderAddress',
+      ...senderAddress,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to create sender address');
+  }
+
+  return response.json();
+}
+
+export const lpExpressClient = {
+  getTerminals,
+  createParcel,
+  initiateShipping,
+  getShippingLabel,
+  createSenderAddress,
+};
+
+export { getTerminals }
