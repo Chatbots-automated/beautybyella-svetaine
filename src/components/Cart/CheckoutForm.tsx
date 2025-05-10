@@ -1,21 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCartStore } from '../../store/cartStore';
 import { createMontonioOrder } from '../../lib/montonio';
-import { createShipment } from '../../lib/shipping';
+import { getTerminals, createParcel, initiateShipping } from '../../lib/lpexpress';
 import { supabase } from '../../lib/supabase';
 import ErrorToast from '../ErrorToast';
 import LoadingSpinner from '../LoadingSpinner';
 import { X } from 'lucide-react';
 
+interface Terminal {
+  id: string;
+  name: string;
+  city: string;
+  address: string;
+  postalCode: string;
+}
+
 interface CheckoutFormData {
   fullName: string;
   email: string;
   phone: string;
-  address: string;
-  city: string;
-  postalCode: string;
   deliveryMethod: 'shipping' | 'pickup';
+  terminalId: string;
   pickupLocation: string;
 }
 
@@ -24,14 +30,13 @@ const CheckoutForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [terminals, setTerminals] = useState<Terminal[]>([]);
   const [formData, setFormData] = useState<CheckoutFormData>({
     fullName: '',
     email: '',
     phone: '',
-    address: '',
-    city: '',
-    postalCode: '',
     deliveryMethod: 'shipping',
+    terminalId: '',
     pickupLocation: 'trakai',
   });
 
@@ -44,9 +49,28 @@ const CheckoutForm = () => {
   const [isCouponLoading, setIsCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState<string | null>(null);
 
+  useEffect(() => {
+    async function fetchTerminals() {
+      try {
+        const terminals = await getTerminals();
+        setTerminals(terminals);
+        if (terminals.length > 0) {
+          setFormData(prev => ({ ...prev, terminalId: terminals[0].id }));
+        }
+      } catch (error) {
+        console.error('Error fetching terminals:', error);
+        setError('Failed to load terminals');
+      }
+    }
+
+    if (formData.deliveryMethod === 'shipping') {
+      fetchTerminals();
+    }
+  }, [formData.deliveryMethod]);
+
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const discount = appliedCoupon ? appliedCoupon.discount_value : 0;
-  const total = Math.max(0, subtotal - discount);
+  const discountAmount = appliedCoupon ? (subtotal * appliedCoupon.discount_value) / 100 : 0;
+  const total = Math.max(0, subtotal - discountAmount);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -92,24 +116,23 @@ const CheckoutForm = () => {
     setError(null);
 
     try {
-      // Calculate total weight based on items (assuming each item is 500g)
+      // Calculate total weight (assuming each item is 500g)
       const totalWeight = items.reduce((sum, item) => sum + (item.quantity * 500), 0);
 
       // Create shipping if delivery method is 'shipping'
       let shippingInfo = null;
       if (formData.deliveryMethod === 'shipping') {
-        shippingInfo = await createShipment({
+        const parcelResponse = await createParcel({
           orderId: `ORDER${Date.now()}`,
           receiverName: formData.fullName,
           receiverPhone: formData.phone,
           receiverEmail: formData.email,
-          street: formData.address,
-          building: "1", // Default value
-          postalCode: formData.postalCode,
-          locality: formData.city,
-          municipality: `${formData.city} m. sav.`,
-          weight: totalWeight
+          terminalId: formData.terminalId,
+          weight: totalWeight,
         });
+
+        await initiateShipping(parcelResponse.idRef);
+        shippingInfo = { trackingNumber: parcelResponse.trackingNumber };
       }
 
       // Create order in Supabase
@@ -127,15 +150,11 @@ const CheckoutForm = () => {
           })),
           total_price: total,
           subtotal: subtotal,
-          discount: discount,
+          discount: discountAmount,
           applied_coupon: appliedCoupon?.code,
           status: 'pending',
           delivery_method: formData.deliveryMethod,
-          shipping_address: formData.deliveryMethod === 'shipping' ? {
-            address: formData.address,
-            city: formData.city,
-            postal_code: formData.postalCode
-          } : null,
+          terminal_id: formData.deliveryMethod === 'shipping' ? formData.terminalId : null,
           tracking_number: shippingInfo?.trackingNumber
         }])
         .select()
@@ -245,7 +264,7 @@ const CheckoutForm = () => {
                 <span className="flex flex-1">
                   <span className="flex flex-col">
                     <span className="block text-sm font-medium text-text-primary">
-                      Pristatymas į namus
+                      LP Express paštomatas
                     </span>
                   </span>
                 </span>
@@ -283,54 +302,25 @@ const CheckoutForm = () => {
           </div>
 
           {formData.deliveryMethod === 'shipping' ? (
-            <>
-              <div>
-                <label htmlFor="address" className="block text-sm font-medium text-text-secondary mb-2">
-                  Pristatymo adresas *
-                </label>
-                <input
-                  type="text"
-                  id="address"
-                  name="address"
-                  required={formData.deliveryMethod === 'shipping'}
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-accent"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="city" className="block text-sm font-medium text-text-secondary mb-2">
-                    Miestas *
-                  </label>
-                  <input
-                    type="text"
-                    id="city"
-                    name="city"
-                    required={formData.deliveryMethod === 'shipping'}
-                    value={formData.city}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-accent"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="postalCode" className="block text-sm font-medium text-text-secondary mb-2">
-                    Pašto kodas *
-                  </label>
-                  <input
-                    type="text"
-                    id="postalCode"
-                    name="postalCode"
-                    required={formData.deliveryMethod === 'shipping'}
-                    value={formData.postalCode}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-accent"
-                  />
-                </div>
-              </div>
-            </>
+            <div>
+              <label htmlFor="terminalId" className="block text-sm font-medium text-text-secondary mb-2">
+                Pasirinkite paštomatą *
+              </label>
+              <select
+                id="terminalId"
+                name="terminalId"
+                required
+                value={formData.terminalId}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-accent"
+              >
+                {terminals.map((terminal) => (
+                  <option key={terminal.id} value={terminal.id}>
+                    {terminal.city}, {terminal.address}
+                  </option>
+                ))}
+              </select>
+            </div>
           ) : (
             <div>
               <label htmlFor="pickupLocation" className="block text-sm font-medium text-text-secondary mb-2">
@@ -358,7 +348,7 @@ const CheckoutForm = () => {
                 <div>
                   <p className="font-medium">Pritaikytas kodas: {appliedCoupon.code}</p>
                   <p className="text-sm text-text-secondary">
-                    Nuolaida: €{appliedCoupon.discount_value.toFixed(2)}
+                    Nuolaida: {appliedCoupon.discount_value}%
                   </p>
                 </div>
                 <button
@@ -410,8 +400,8 @@ const CheckoutForm = () => {
             </div>
             {appliedCoupon && (
               <div className="flex justify-between text-accent">
-                <span>Nuolaida:</span>
-                <span>-€{appliedCoupon.discount_value.toFixed(2)}</span>
+                <span>Nuolaida ({appliedCoupon.discount_value}%):</span>
+                <span>-€{discountAmount.toFixed(2)}</span>
               </div>
             )}
             <div className="flex justify-between text-xl font-serif">
