@@ -52,7 +52,7 @@ const DiscountNotification = () => {
                 
                 <div>
                   <p className="text-sm font-medium mb-2">
-                    Gaukite 5€ nuolaidą nuo galutinės sumos!
+                    Gaukite 5% nuolaidą nuo galutinės sumos!
                   </p>
                   <div className="bg-background p-2 rounded-lg">
                     <span className="font-mono text-base font-medium">Ella5</span>
