@@ -9,7 +9,7 @@ interface Terminal {
 }
 
 export async function getTerminals(): Promise<Terminal[]> {
-  const response = await fetch('https://beautybella-lpexpress.vercel.app/api/lpexpress.ts');
+  const response = await fetch('https://beautybella-lpexpress.vercel.app/api/lpexpress');
 
   if (!response.ok) {
     throw new Error('Failed to fetch terminals');
@@ -20,53 +20,56 @@ export async function getTerminals(): Promise<Terminal[]> {
 }
 
 interface CreateParcelParams {
-  orderId: string;
-  receiverName: string;
-  receiverPhone: string;
-  receiverEmail: string;
-  terminalId: string;
-  weight: number;
+  idRef: string;
+  plan: {
+    code: string;
+    size: string;
+    weight: number;
+  };
+  parcel: {
+    type: string;
+    size: string;
+    weight: number;
+    partCount: number;
+    document: boolean;
+  };
+  receiver: {
+    name: string;
+    phone: string;
+    email: string;
+    terminalId: string;
+    address: {
+      countryCode: string;
+      postalCode: string;
+      street: string;
+      locality: string;
+    };
+  };
+  senderAddressId: string;
 }
 
 export async function createParcel(params: CreateParcelParams) {
-  const response = await fetch('https://beautybella-lpexpress.vercel.app/api/lpexpress.ts', {
+  const response = await fetch('https://beautybella-lpexpress.vercel.app/api/lpexpress', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       action: 'createParcel',
-      idRef: params.orderId,
-      plan: {
-        planCode: 'TERMINAL',
-        size: 'M',
-        weight: params.weight
-      },
-      parcel: {
-        type: 'PACKAGE',
-        size: 'M',
-        weight: params.weight,
-        partCount: 1,
-        document: false
-      },
-      receiver: {
-        name: params.receiverName,
-        phone: params.receiverPhone,
-        email: params.receiverEmail,
-        terminalId: params.terminalId
-      }
+      ...params
     }),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to create parcel');
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to create parcel');
   }
 
   return response.json();
 }
 
 export async function initiateShipping(orderId: string) {
-  const response = await fetch('https://beautybella-lpexpress.vercel.app/api/lpexpress.ts', {
+  const response = await fetch('https://beautybella-lpexpress.vercel.app/api/lpexpress', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -85,7 +88,7 @@ export async function initiateShipping(orderId: string) {
 }
 
 export async function getShippingLabel(orderId: string) {
-  const response = await fetch('https://beautybella-lpexpress.vercel.app/api/lpexpress.ts', {
+  const response = await fetch('https://beautybella-lpexpress.vercel.app/api/lpexpress', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -32,46 +32,40 @@ interface ShippingDetails {
 
 export async function createShipment(details: ShippingDetails) {
   try {
-    // Step 1: Create sender address
     const senderResponse = await lpExpressClient.createSenderAddress(DEFAULT_SENDER);
     const senderAddressId = senderResponse.id;
 
-    // Step 2: Create parcel with terminal data
     const parcelData = {
-  idRef: details.orderId,
-  plan: {
-    code: 'TERMINAL',
-    size: 'M',
-    weight: details.weight
-  },
-  parcel: {
-    type: 'Parcel',
-    size: 'M',
-    weight: details.weight,
-    partCount: 1,
-    document: false
-  },
-  receiver: {
-    name: details.receiverName,
-    phone: details.receiverPhone,
-    email: details.receiverEmail,
-    terminalId: details.terminalId,
-    address: {
-      countryCode: 'LT',
-      postalCode: details.terminal?.postalCode || '01100',
-      street: details.terminal?.address || 'Terminal',
-      locality: details.terminal?.city || 'Vilnius'
-    }
-  },
-  senderAddressId
-};
+      idRef: details.orderId,
+      plan: {
+        code: 'TERMINAL',
+        size: 'M',
+        weight: details.weight
+      },
+      parcel: {
+        type: 'PACKAGE', // ✅ Fixed value
+        size: 'M',
+        weight: details.weight,
+        partCount: 1,
+        document: false
+      },
+      receiver: {
+        name: details.receiverName,
+        phone: details.receiverPhone,
+        email: details.receiverEmail,
+        terminalId: details.terminalId,
+        address: {
+          countryCode: 'LT',
+          postalCode: details.terminal?.postalCode || '01100',
+          street: details.terminal?.address || 'Terminal',
+          locality: details.terminal?.city || 'Vilnius'
+        }
+      },
+      senderAddressId
+    };
 
     const parcelResponse = await lpExpressClient.createParcel(parcelData);
-
-    // Step 3: Initiate shipping
     await lpExpressClient.initiateShipping([details.orderId]);
-
-    // Step 4: Get shipping label
     const labelBlob = await lpExpressClient.getShippingLabel(details.orderId);
     const labelUrl = URL.createObjectURL(labelBlob);
 
@@ -81,7 +75,7 @@ export async function createShipment(details: ShippingDetails) {
       labelUrl
     };
   } catch (error) {
-    console.error('Error creating shipment:', error);
+    console.error('❌ Error creating shipment:', error);
     throw error;
   }
 }

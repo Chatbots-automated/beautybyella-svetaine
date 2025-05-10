@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCartStore } from '../../store/cartStore';
 import { createMontonioOrder } from '../../lib/montonio';
-import { getTerminals, createParcel, initiateShipping } from '../../lib/lpexpress';
+import { getTerminals } from '../../lib/lpexpress';
+import { createShipment } from '../../lib/shipping';
 import { supabase } from '../../lib/supabase';
 import ErrorToast from '../ErrorToast';
 import LoadingSpinner from '../LoadingSpinner';
@@ -122,17 +123,22 @@ const CheckoutForm = () => {
       // Create shipping if delivery method is 'shipping'
       let shippingInfo = null;
       if (formData.deliveryMethod === 'shipping') {
-        const parcelResponse = await createParcel({
+        const selectedTerminal = terminals.find(t => t.terminalId === formData.terminalId);
+        
+        const shippingResult = await createShipment({
           orderId: `ORDER${Date.now()}`,
           receiverName: formData.fullName,
           receiverPhone: formData.phone,
           receiverEmail: formData.email,
           terminalId: formData.terminalId,
           weight: totalWeight,
+          terminal: selectedTerminal
         });
 
-        await initiateShipping(parcelResponse.idRef);
-        shippingInfo = { trackingNumber: parcelResponse.trackingNumber };
+        shippingInfo = { 
+          trackingNumber: shippingResult.trackingNumber,
+          labelUrl: shippingResult.labelUrl
+        };
       }
 
       // Create order in Supabase
