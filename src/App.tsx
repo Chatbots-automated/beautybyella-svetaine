@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet';
 import Layout from './components/Layout';
@@ -10,10 +10,23 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import CartDrawer from './components/Cart/CartDrawer';
 import OrderSuccess from './components/OrderSuccess';
+import { pageView } from './lib/fbPixel';
+
+// Route change tracking component
+const RouteChangeTracker = () => {
+  const location = useLocation();
+  
+  useEffect(() => {
+    pageView();
+  }, [location]);
+
+  return null;
+};
 
 function App() {
   return (
     <BrowserRouter>
+      <RouteChangeTracker />
       <Helmet>
         <title>Beauty by Ella | Luxury Cosmetics</title>
         <meta name="description" content="Discover luxury cosmetics and skincare products at Beauty by Ella. Natural ingredients, professional quality, and exceptional results." />

@@ -4,6 +4,7 @@ import { CheckCircle, Truck, MapPin } from 'lucide-react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import LoadingSpinner from './LoadingSpinner';
+import { purchase } from '../lib/fbPixel';
 
 interface OrderDetails {
   id: string;
@@ -46,6 +47,20 @@ const OrderSuccess = () => {
 
         if (orderError) throw orderError;
         setOrderDetails(order);
+
+        // Track purchase event
+        if (order) {
+          purchase(
+            order.id,
+            order.total_price,
+            order.products.map((p: any) => ({
+              id: p.id,
+              name: p.name,
+              price: p.price,
+              quantity: p.quantity
+            }))
+          );
+        }
       } catch (error) {
         console.error('Error fetching order:', error);
         setError('Nepavyko gauti užsakymo informacijos');

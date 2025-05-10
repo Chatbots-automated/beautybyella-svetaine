@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { addToCart as trackAddToCart } from '../lib/fbPixel';
 
 export interface CartItem {
   id: string;
@@ -28,6 +29,9 @@ export const useCartStore = create<CartStore>()(
       addItem: (item) =>
         set((state) => {
           const existingItem = state.items.find((i) => i.id === item.id);
+          // Track the event
+          trackAddToCart(item);
+          
           if (existingItem) {
             return {
               items: state.items.map((i) =>

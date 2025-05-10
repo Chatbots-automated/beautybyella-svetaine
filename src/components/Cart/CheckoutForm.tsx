@@ -7,6 +7,7 @@ import { supabase } from '../../lib/supabase';
 import ErrorToast from '../ErrorToast';
 import LoadingSpinner from '../LoadingSpinner';
 import { X } from 'lucide-react';
+import { initiateCheckout } from '../../lib/fbPixel';
 
 interface Terminal {
   id: string;
@@ -48,6 +49,11 @@ const CheckoutForm = () => {
   } | null>(null);
   const [isCouponLoading, setIsCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Track InitiateCheckout when the form is mounted
+    initiateCheckout(items);
+  }, [items]);
 
   useEffect(() => {
     async function fetchTerminals() {
