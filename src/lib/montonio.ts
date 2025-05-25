@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer';
+
 const MONTONIO_ACCESS_KEY = '1688c380-82b9-4e5d-b1c8-ef455f4539ae';
 const MONTONIO_SECRET_KEY = '0gskJDxjtJQnwNDC19Tpp0zEzvxVrEnueFQv76jjcm54';
 
@@ -12,15 +14,14 @@ interface MontonioOrderPayload {
   notificationUrl: string;
 }
 
-// Helper to base64url encode
-function base64url(source: string) {
-  return btoa(source)
+function base64url(bytes: Uint8Array) {
+  return Buffer.from(bytes)
+    .toString('base64')
     .replace(/=/g, '')
     .replace(/\+/g, '-')
     .replace(/\//g, '_');
 }
 
-// Helper to create HMAC SHA256 signature
 async function sign(secret: string, data: string): Promise<string> {
   const encoder = new TextEncoder();
   const key = await crypto.subtle.importKey(
@@ -31,29 +32,26 @@ async function sign(secret: string, data: string): Promise<string> {
     ['sign']
   );
   const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(data));
-  const bytes = new Uint8Array(signature);
-  let binary = '';
-  bytes.forEach((b) => binary += String.fromCharCode(b));
-  return base64url(binary);
+  return base64url(new Uint8Array(signature));
 }
 
-// Create JWT manually
 async function createJWT(payload: any, secret: string): Promise<string> {
   const header = {
     alg: 'HS256',
     typ: 'JWT',
   };
-  const headerBase64 = base64url(JSON.stringify(header));
-  const payloadBase64 = base64url(JSON.stringify(payload));
+
+  const encoder = new TextEncoder();
+  const headerBase64 = base64url(encoder.encode(JSON.stringify(header)));
+  const payloadBase64 = base64url(encoder.encode(JSON.stringify(payload)));
   const data = `${headerBase64}.${payloadBase64}`;
   const signatureBase64 = await sign(secret, data);
+  
   return `${data}.${signatureBase64}`;
 }
 
-// Final function to create Montonio order
 export async function createMontonioOrder(orderData: MontonioOrderPayload) {
   try {
-    // Use the amount directly in euros (14.00)
     const amount = orderData.amount;
 
     const [firstName, ...lastNameParts] = (orderData.customerName || 'Customer').split(' ');
