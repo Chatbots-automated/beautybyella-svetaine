@@ -26,6 +26,9 @@ interface CheckoutFormData {
   pickupLocation: string;
 }
 
+const DELIVERY_PRICE = 3;
+const FREE_DELIVERY_THRESHOLD = 50;
+
 const CheckoutForm = () => {
   const { items, clearCart, closeCart } = useCartStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -76,7 +79,8 @@ const CheckoutForm = () => {
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const discountAmount = appliedCoupon ? (subtotal * appliedCoupon.discount_value) / 100 : 0;
-  const total = Math.max(0, subtotal - discountAmount);
+  const deliveryPrice = formData.deliveryMethod === 'shipping' && subtotal < FREE_DELIVERY_THRESHOLD ? DELIVERY_PRICE : 0;
+  const total = Math.max(0, subtotal - discountAmount + deliveryPrice);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -152,6 +156,7 @@ const CheckoutForm = () => {
           total_price: total,
           subtotal: subtotal,
           discount: discountAmount,
+          shipping_cost: deliveryPrice,
           applied_coupon: appliedCoupon?.code,
           status: 'pending',
           delivery_method: formData.deliveryMethod,
@@ -267,6 +272,9 @@ const CheckoutForm = () => {
                     <span className="block text-sm font-medium text-text-primary">
                       LP Express paštomatas
                     </span>
+                    <span className="mt-1 text-xs text-text-secondary">
+                      {subtotal >= FREE_DELIVERY_THRESHOLD ? 'Nemokamas pristatymas' : `€${DELIVERY_PRICE.toFixed(2)}`}
+                    </span>
                   </span>
                 </span>
                 <span 
@@ -289,6 +297,9 @@ const CheckoutForm = () => {
                   <span className="flex flex-col">
                     <span className="block text-sm font-medium text-text-primary">
                       Atsiėmimas salone
+                    </span>
+                    <span className="mt-1 text-xs text-text-secondary">
+                      Nemokamas
                     </span>
                   </span>
                 </span>
@@ -403,6 +414,18 @@ const CheckoutForm = () => {
               <div className="flex justify-between text-accent">
                 <span>Nuolaida ({appliedCoupon.discount_value}%):</span>
                 <span>-€{discountAmount.toFixed(2)}</span>
+              </div>
+            )}
+            {formData.deliveryMethod === 'shipping' && (
+              <div className="flex justify-between text-text-secondary">
+                <span>Pristatymas:</span>
+                <span>
+                  {subtotal >= FREE_DELIVERY_THRESHOLD ? (
+                    <span className="text-green-600">Nemokamas</span>
+                  ) : (
+                    `€${deliveryPrice.toFixed(2)}`
+                  )}
+                </span>
               </div>
             )}
             <div className="flex justify-between text-xl font-serif">
